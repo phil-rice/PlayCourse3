@@ -36,5 +36,4 @@ class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext) {
 
   val homePage = (enrichedPromotion, enrichedMostPopular).merge[HomePageQuery, HomePage]
 
-
 }
