@@ -6,13 +6,13 @@ trait HomePageQuery
 
 object HomePageQuery extends HomePageQuery {
 
-  implicit object FindChildIdForHomePageAndMostPopular extends FindChildId[HomePageQuery, MostPopularQuery] {
-    override def apply(v1: HomePageQuery) = MostPopularQuery
-  }
-
-  implicit object FindChildIdForHomePageAndPromotion extends FindChildId[HomePageQuery, PromotionQuery] {
-    override def apply(v1: HomePageQuery) = PromotionQuery
-  }
+//  implicit object FindChildIdForHomePageAndMostPopular extends FindChildId[HomePageQuery, MostPopularQuery] {
+//    override def apply(v1: HomePageQuery) = MostPopularQuery
+//  }
+//
+//  implicit object FindChildIdForHomePageAndPromotion extends FindChildId[HomePageQuery, PromotionQuery] {
+//    override def apply(v1: HomePageQuery) = PromotionQuery
+//  }
 
 }
 
