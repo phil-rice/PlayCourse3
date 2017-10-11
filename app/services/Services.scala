@@ -4,7 +4,7 @@ import javax.inject.{Inject, Singleton}
 
 import domain._
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
-import utilities.kleisli.Kleisli
+import utilities.kleisli.{EnricherKlesli, Kleisli}
 import utilities.profile.TryProfileData
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,10 +31,10 @@ class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext) {
   val programmeFnord: Kleisli[ProgrammeId, Programme] = new KleisliPimper(fnordProgrammeHttp) |+| profile(fnordProgrammeProfileData) |+| objectify[ProgrammeId, Programme]
 
 
-  val enrichedPromotion = (billboard, productionFnord).enrich[EnrichedPromotion]
-  val enrichedMostPopular = (vogue, programmeFnord).enrich[EnrichedMostPopular]
+  val enrichedPromotion: Kleisli[PromotionQuery, EnrichedPromotion] = (billboard, productionFnord).enrich[EnrichedPromotion]
+  val enrichedMostPopular: Kleisli[MostPopularQuery, EnrichedMostPopular] = (vogue, programmeFnord).enrich[EnrichedMostPopular]
 
-  val homePage = new MergerTupleFinder[PromotionQuery, EnrichedPromotion, MostPopularQuery, EnrichedMostPopular]((enrichedPromotion, enrichedMostPopular)).merge[HomePageQuery, HomePage]
+  val homePage = (enrichedPromotion, enrichedMostPopular).merge[HomePageQuery, HomePage]
 
 
 }
