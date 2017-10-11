@@ -28,8 +28,7 @@ trait EnricherLanguage {
 }
 
 
-class MergerKleisli[MainReq, MainRes, Req1, Res1, Req2, Res2]
-(one: Kleisli[Req1, Res1], two: Kleisli[Req2, Res2])
+class MergerKleisli[MainReq, MainRes, Req1, Res1, Req2, Res2](one: Kleisli[Req1, Res1], two: Kleisli[Req2, Res2])
 (implicit findId1: FindChildId[MainReq, Req1], findId2: FindChildId[MainReq, Req2], merge: Merge[Res1, Res2, MainRes], ex: ExecutionContext) extends Kleisli[MainReq, MainRes] {
   override def apply(main: MainReq) = {
     val f1 = one(findId1(main))

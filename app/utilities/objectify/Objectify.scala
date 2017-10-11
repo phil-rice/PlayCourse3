@@ -1,12 +1,13 @@
 package utilities.objectify
 
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
+import services.HostAndPorts
 import utilities.kleisli.{Kleisli, KleisliTransformer}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait BuildRequestFrom[Req] {
-  def apply(ws: WSClient)(t: Req): WSRequest
+  def apply(ws: WSClient)(t: Req)(implicit hostAndPorts: HostAndPorts): WSRequest
 }
 
 trait BuildFromResponse[Req, Res] {
