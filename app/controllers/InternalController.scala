@@ -6,7 +6,7 @@ import domain._
 import play.api.mvc.{AbstractController, ControllerComponents}
 import services.Services
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
@@ -14,7 +14,7 @@ class InternalController @Inject()(cc: ControllerComponents, services: Services)
   implicit val ec = ExecutionContext.global
 
   def vogue = Action.async { implicit request =>
-    services.vogue(MostPopularQuery).map { mostPopular => Ok(mostPopular.toString).as("text/html") }
+    Future.successful(Ok("you need to call the services.vogue method with a MostPopularQuery and then return the ToString of it"))
   }
 
   def billboard = Action.async { implicit request =>
@@ -25,7 +25,7 @@ class InternalController @Inject()(cc: ControllerComponents, services: Services)
     services.programmeFnord(ProgrammeId(id)).map { promotion => Ok(promotion.toString).as("text/html") }
   }
 
-  def produciton(id: String) = Action.async { implicit request =>
+  def production(id: String) = Action.async { implicit request =>
     services.productionFnord(ProductionId(id)).map { promotion => Ok(promotion.toString).as("text/html") }
   }
 

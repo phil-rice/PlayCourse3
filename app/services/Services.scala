@@ -22,13 +22,14 @@ class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext) {
   val fnordProgrammeProfileData = new TryProfileData
 
 
+  // You need to make the objectify work. Follow the compiler error messages and implement the type classes
   val vogue: Kleisli[MostPopularQuery, MostPopular] = vogueHttp |+|  profile(vogueProfileData) |+| objectify[MostPopularQuery, MostPopular] |+| cache
 
-  val billboard: Kleisli[PromotionQuery, Promotion] = new KleisliPimper(billboardHttp) |+| profile(billboardProfileData) |+| objectify[PromotionQuery, Promotion] |+| cache
+  val billboard: Kleisli[PromotionQuery, Promotion] = billboardHttp |+| profile(billboardProfileData) |+| objectify[PromotionQuery, Promotion] |+| cache
 
-  val productionFnord: Kleisli[ProductionId, Production] = new KleisliPimper(fnordProductionHttp) |+| profile(fnordProductionProfileData) |+| objectify[ProductionId, Production]
+  val productionFnord: Kleisli[ProductionId, Production] = fnordProductionHttp |+| profile(fnordProductionProfileData) |+| objectify[ProductionId, Production]
 
-  val programmeFnord: Kleisli[ProgrammeId, Programme] = new KleisliPimper(fnordProgrammeHttp) |+| profile(fnordProgrammeProfileData) |+| objectify[ProgrammeId, Programme]
+  val programmeFnord: Kleisli[ProgrammeId, Programme] = fnordProgrammeHttp |+| profile(fnordProgrammeProfileData) |+| objectify[ProgrammeId, Programme]
 
 
   val enrichedPromotion = (billboard, productionFnord).enrich[EnrichedPromotion]

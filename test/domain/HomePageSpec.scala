@@ -1,7 +1,5 @@
 package domain
 
-import utilities.kleisli.{FindChildId, Merge}
-
 class HomePageSpec extends UnitSpec with MergerFixture[HomePageQuery, HomePage, EnrichedPromotion, EnrichedMostPopular] {
 
   behavior of "HomePageQuery"
