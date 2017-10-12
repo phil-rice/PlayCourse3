@@ -14,7 +14,7 @@ class EnrichPromotionSpec extends UnitSpec with EnricherFixture[PromotionQuery, 
 
   it should " have an enricher " in {
     setupEnricher { enricher =>
-      enricher.apply(PromotionQuery, promotion)(productions) shouldBe EnrichedPromotion(productions)
+      enricher.apply(PromotionQuery,promotion, productions) shouldBe EnrichedPromotion(productions)
     }
   }
 }

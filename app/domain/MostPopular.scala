@@ -39,7 +39,7 @@ object MostPopular {
 object EnrichedMostPopular {
 
   implicit object EnricherForMostPopular extends Enricher[MostPopularQuery, MostPopular, Programme, EnrichedMostPopular] {
-    override def apply(v1: MostPopularQuery, v2: MostPopular) = { programs: Seq[Programme] => EnrichedMostPopular(programs) }
+    override def apply(v1: MostPopularQuery, v2: MostPopular, v3: Seq[Programme]) = EnrichedMostPopular(v3)
   }
 
 }

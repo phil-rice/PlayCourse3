@@ -16,7 +16,7 @@ class EnrichMostPopularSpec extends UnitSpec with EnricherFixture[MostPopularQue
 
   it should " have an enricher " in {
     setupEnricher { enricher =>
-      enricher.apply(MostPopularQuery, mostPopular)(programmes) shouldBe EnrichedMostPopular(programmes)
+      enricher.apply(MostPopularQuery,mostPopular, programmes) shouldBe EnrichedMostPopular(programmes)
     }
   }
 }

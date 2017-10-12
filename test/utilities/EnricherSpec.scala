@@ -1,10 +1,11 @@
 package utilities
 
 import domain.{ServicesFixture, UnitSpec}
-import utilities.kleisli.{EnricherLanguage, MergerLanguage}
+import utilities.kleisli.Kleislis
+
 import scala.concurrent.ExecutionContext.Implicits._
 
-class EnricherSpec extends UnitSpec with ServicesFixture with EnricherLanguage {
+class EnricherSpec extends UnitSpec with ServicesFixture with Kleislis {
 
   behavior of "Enricher"
 

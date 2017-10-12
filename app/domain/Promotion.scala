@@ -37,7 +37,7 @@ object Promotion {
 object EnrichedPromotion {
 
   implicit object EnricherForPromotions extends Enricher[PromotionQuery, Promotion, Production, EnrichedPromotion] {
-    override def apply(v1: PromotionQuery, v2: Promotion) = { productions: Seq[Production] => EnrichedPromotion(productions) }
+    override def apply(v1: PromotionQuery, v2: Promotion, v3: Seq[Production]) = EnrichedPromotion(v3)
   }
 
 }

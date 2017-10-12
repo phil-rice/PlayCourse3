@@ -3,11 +3,11 @@ package services
 import javax.inject.{Inject, Singleton}
 
 import domain._
-import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
-import utilities.kleisli.{EnricherKlesli, Kleisli}
+import play.api.libs.ws.WSClient
+import utilities.kleisli.Kleisli
 import utilities.profile.TryProfileData
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 
 @Singleton()

@@ -11,9 +11,11 @@ import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
 trait UnitSpec extends FlatSpec with Matchers with MockFactory {
+
   implicit class FuturePimper[T](f: Future[T]) {
     def await = Await.result(f, 5 seconds)
   }
+
 }
 
 trait BuildRequestFromFixture[Req] extends MockFactory {
@@ -59,7 +61,6 @@ case class TestEnrichedRes(s: List[TestReq1])
 
 trait ServicesFixture {
 
-
   val mockParentService: Kleisli[String, TestParentRes] = { req: String => Future.successful(TestParentRes(req.split(",").map(TestReq1(_)).toList)) }
 
   val mockService1: Kleisli[TestReq1, String] = {
@@ -87,7 +88,7 @@ trait ServicesFixture {
   }
 
   implicit object EnricherForTest extends Enricher[String, TestParentRes, String, String] {
-    override def apply(v1: String, v2: TestParentRes) = {childRes => v1 +"/"+ v2 + "/"+childRes}
+    override def apply(v1: String, v2: TestParentRes, v3: Seq[String]) = v1 + "/" + v2 + "/" + v3
   }
 
 }

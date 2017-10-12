@@ -1,12 +1,11 @@
 package utilities
 
 import domain.{ServicesFixture, UnitSpec}
-import utilities.kleisli.MergerLanguage
+import utilities.kleisli.Kleislis
 
 import scala.concurrent.ExecutionContext.Implicits._
 
-
-class MergerSpec extends UnitSpec with ServicesFixture with MergerLanguage {
+class MergerSpec extends UnitSpec with ServicesFixture with Kleislis {
 
   behavior of "KleisliMerger"
 
