@@ -14,7 +14,7 @@ class InternalController @Inject()(cc: ControllerComponents, services: Services)
   implicit val ec = ExecutionContext.global
 
   def vogue = Action.async { implicit request =>
-    Future.successful(Ok("you need to call the services.vogue method with a MostPopularQuery and then return the ToString of it"))
+    Future.successful(Ok("you need to call the services.vogue method with a MostPopularQuery and then return the ToString of it, The url is 'vogue'/mostPopular"))
   }
 
   def billboard = Action.async { implicit request =>
