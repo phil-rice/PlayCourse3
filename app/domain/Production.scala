@@ -3,7 +3,7 @@ package domain
 import play.api.libs.ws.{WSClient, WSResponse}
 import services.HostAndPorts
 import org.validoc.utilities.debugEndpoint.MakeDebugQuery
-import utilities.objectify.{BuildFromResponse, BuildRequestFrom}
+import services.objectify.{BuildFromResponse, BuildRequestFrom}
 
 
 case class ProductionId(id: String) extends AnyVal

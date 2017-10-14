@@ -4,7 +4,7 @@ import org.scalamock.scalatest.MockFactory
 import org.validoc.utilities.kleisli.Enricher
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import services.HostAndPorts
-import utilities.objectify.{BuildFromResponse, BuildRequestFrom}
+import services.objectify.{BuildFromResponse, BuildRequestFrom}
 
 trait BuildRequestFromFixture[Req] extends MockFactory {
 

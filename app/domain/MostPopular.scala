@@ -4,7 +4,7 @@ import play.api.libs.ws.{WSClient, WSResponse}
 import services.HostAndPorts
 import org.validoc.utilities.debugEndpoint.MakeDebugQuery
 import org.validoc.utilities.kleisli.{ChildReqFinder, Enricher}
-import utilities.objectify.{BuildFromResponse, BuildRequestFrom}
+import services.objectify.{BuildFromResponse, BuildRequestFrom}
 
 trait MostPopularQuery
 
@@ -22,7 +22,6 @@ object MostPopularQuery extends MostPopularQuery {
     override def apply(ws: WSClient)(t: MostPopularQuery)(implicit hostAndPorts: HostAndPorts) =
       ws.url(hostAndPorts.vogueHostAndPort + "/mostpopular")
   }
-
 }
 
 object MostPopular {
@@ -45,4 +44,4 @@ object EnrichedMostPopular {
     override def apply(v1: MostPopularQuery, v2: MostPopular, v3: Seq[Programme]) = EnrichedMostPopular(v3)
   }
 
-}
+} 

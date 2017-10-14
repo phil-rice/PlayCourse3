@@ -4,18 +4,18 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET        /                                    controllers.HomeController.index
-GET        /internal/vogue                      controllers.InternalController.vogue
-GET        /internal/billboard                  controllers.InternalController.billboard
-GET        /internal/production/:id             controllers.InternalController.produciton(id)
-GET        /internal/programme/:id              controllers.InternalController.programme(id)
-GET        /internal/enrichedMostPopular        controllers.InternalController.enrichedMostPopular
-GET        /internal/enrichedPromotion          controllers.InternalController.enrichedPromotion
-GET        /internal/homePage                   controllers.InternalController.homePage
-GET        /internal2/:name              controllers.InternalController.allServices(name, param: String = "")
-GET        /internal2/:name/:param              controllers.InternalController.allServices(name, param)
+GET        /                             controllers.HomeController.index
+#GET        /internal/vogue                      controllers.InternalController.vogue
+#GET        /internal/billboard                  controllers.InternalController.billboard
+#GET        /internal/production/:id             controllers.InternalController.produciton(id)
+#GET        /internal/programme/:id              controllers.InternalController.programme(id)
+#GET        /internal/enrichedMostPopular        controllers.InternalController.enrichedMostPopular
+#GET        /internal/enrichedPromotion          controllers.InternalController.enrichedPromotion
+#GET        /internal/homePage                   controllers.InternalController.homePage
+GET        /internal/:name               controllers.InternalController.allServices(name, param: String = "")
+GET        /internal/:name/:param        controllers.InternalController.allServices(name, param)
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file                        controllers.Assets.versioned(path="/public", file: Asset)
+GET        /assets/*file                 controllers.Assets.versioned(path="/public", file: Asset)
 
       

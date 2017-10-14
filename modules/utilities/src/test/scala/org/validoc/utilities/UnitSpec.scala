@@ -9,11 +9,9 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 trait UnitSpec extends FlatSpec with Matchers with MockFactory {
-
   implicit class FuturePimper[T](f: Future[T]) {
     def await = Await.result(f, 5 seconds)
   }
-
 }
 
 

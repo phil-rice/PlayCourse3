@@ -4,7 +4,7 @@ import play.api.libs.ws.{WSClient, WSResponse}
 import services.HostAndPorts
 import org.validoc.utilities.debugEndpoint.MakeDebugQuery
 import org.validoc.utilities.kleisli.{ChildReqFinder, Enricher}
-import utilities.objectify.{BuildFromResponse, BuildRequestFrom}
+import services.objectify.{BuildFromResponse, BuildRequestFrom}
 
 trait PromotionQuery
 

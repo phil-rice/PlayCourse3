@@ -1,3 +1,5 @@
+import sbt.compilerPlugin
+
 name := "PlayCourse3"
 
 val versions = new {
@@ -16,12 +18,20 @@ val basicSettings = Seq(
   libraryDependencies += "org.scalatest" %% "scalatest" % versions.scalatest % "test",
   libraryDependencies += "org.scalamock" %% "scalamock-scalatest-support" % versions.scalamock % Test)
 
+val utilitiesSettings = basicSettings ++ Seq(
+//  libraryDependencies += "org.typelevel" %% "macro-compat" % "1.1.1",
+//  libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
+//  libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.11.7",
+//  libraryDependencies += compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.patch)
+)
+
 val playSettings = basicSettings ++ Seq(
   libraryDependencies ++= Seq(jdbc, ehcache, ws, specs2 % Test, guice),
   unmanagedResourceDirectories in Test <+= baseDirectory(_ / "target/web/public/test")
 )
 
-lazy val utilities = (project in file("modules/utilities")).settings(basicSettings: _*)
+lazy val utilities = (project in file("modules/utilities")).
+  settings(utilitiesSettings: _*)
 
 lazy val playcourse3 = (project in file(".")).
   settings(playSettings: _*).

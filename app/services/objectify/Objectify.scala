@@ -1,4 +1,4 @@
-package utilities.objectify
+package services.objectify
 
 import org.validoc.utilities.kleisli.KleisliTransformer
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}

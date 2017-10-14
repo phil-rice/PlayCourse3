@@ -27,8 +27,8 @@ trait DebugEndPointLanguage {
       override def apply(kleisli: Kleisli[Req, Res]): Kleisli[String, String] = makeQuery ~> kleisli ~> debugToString
     }
 
-  class DebugEndpoint[Req, Res](name: String, kleisli: Kleisli[Req, Res])(implicit makeQuery: MakeDebugQuery[Req], debugToString: DebugToString[Res], executionContext: ExecutionContext) extends (String => Future[String]) {
-    override def apply(request: String) = kleisli(makeQuery(request)).map(debugToString)
-  }
+//  class DebugEndpoint[Req, Res](name: String, kleisli: Kleisli[Req, Res])(implicit makeQuery: MakeDebugQuery[Req], debugToString: DebugToString[Res], executionContext: ExecutionContext) extends (String => Future[String]) {
+//    override def apply(request: String) = kleisli(makeQuery(request)).map(debugToString)
+//  }
 
 }
