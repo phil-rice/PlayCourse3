@@ -2,6 +2,7 @@ package domain
 
 import play.api.libs.ws.{WSClient, WSResponse}
 import services.HostAndPorts
+import utilities.debugEndpoint.MakeDebugQuery
 import utilities.objectify.{BuildFromResponse, BuildRequestFrom}
 
 
@@ -14,6 +15,9 @@ object ProductionId {
 
   implicit object BuildRequestForProductionid extends BuildRequestFrom[ProductionId] {
     override def apply(ws: WSClient)(t: ProductionId)(implicit hostAndPorts: HostAndPorts) = ws.url(hostAndPorts.fnordHostAndPort + s"/production/${t.id}")
+  }
+  implicit object MakeDebugQueryForProductionId extends MakeDebugQuery[ProductionId] {
+    override def apply(v1: String) = ProductionId(v1)
   }
 
 }

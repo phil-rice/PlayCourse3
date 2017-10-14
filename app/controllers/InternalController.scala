@@ -13,6 +13,10 @@ import scala.concurrent.ExecutionContext
 class InternalController @Inject()(cc: ControllerComponents, services: Services) extends AbstractController(cc) {
   implicit val ec = ExecutionContext.global
 
+  def allServices(name: String, param: String) = Action.async { implicit request =>
+    services.debugEndpoints(name)(param).map(result => Ok(result).as("text/html"))
+  }
+
   def vogue = Action.async { implicit request =>
     services.vogue(MostPopularQuery).map { mostPopular => Ok(mostPopular.toString).as("text/html") }
   }
@@ -36,8 +40,9 @@ class InternalController @Inject()(cc: ControllerComponents, services: Services)
   def enrichedMostPopular = Action.async { implicit request =>
     services.enrichedMostPopular(MostPopularQuery).map { mostPopular => Ok(mostPopular.toString).as("text/html") }
   }
+
   def homePage = Action.async { implicit request =>
-    services.homePage(HomePageQuery).map { homePage => Ok("HomePage:" + homePage.mostPopular +"<br/>" + homePage.promotions).as("text/html") }
+    services.homePage(HomePageQuery).map { homePage => Ok("HomePage:" + homePage.mostPopular + "<br/>" + homePage.promotions).as("text/html") }
   }
 
 }

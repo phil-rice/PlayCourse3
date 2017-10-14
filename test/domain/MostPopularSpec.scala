@@ -3,11 +3,14 @@ package domain
 import org.scalamock.scalatest.MockFactory
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import services.HostAndPorts
+import utilities.kleisli.{Kleisli, Kleislis}
 import utilities.objectify.{BuildFromResponse, BuildRequestFrom}
 
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 
-class MostPopularSpec extends UnitSpec with BuildRequestFromFixture[MostPopularQuery] with BuildFromResponseFixture[MostPopularQuery, MostPopular] {
+class MostPopularSpec extends UnitSpec with BuildRequestFromFixture[MostPopularQuery] with BuildFromResponseFixture[MostPopularQuery, MostPopular] with Kleislis {
 
   behavior of "MostPopularQuery"
 

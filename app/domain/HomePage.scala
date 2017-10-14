@@ -1,10 +1,15 @@
 package domain
 
+import utilities.debugEndpoint.MakeDebugQuery
 import utilities.kleisli.{FindChildId, Merge}
 
 trait HomePageQuery
 
 object HomePageQuery extends HomePageQuery {
+
+  implicit object MakeDebugQueryForHomePageQuery extends MakeDebugQuery[HomePageQuery] {
+    override def apply(v1: String) = HomePageQuery
+  }
 
   implicit object FindChildIdForHomePageAndMostPopular extends FindChildId[HomePageQuery, MostPopularQuery] {
     override def apply(v1: HomePageQuery) = MostPopularQuery
