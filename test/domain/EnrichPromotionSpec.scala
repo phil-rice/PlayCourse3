@@ -1,5 +1,7 @@
 package domain
 
+import org.validoc.utilities.UnitSpec
+
 class EnrichPromotionSpec extends UnitSpec with EnricherFixture[PromotionQuery, Promotion, Production, EnrichedPromotion] {
 
   behavior of "EnrichMostPopular"

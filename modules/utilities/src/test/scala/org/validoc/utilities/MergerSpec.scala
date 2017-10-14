@@ -1,10 +1,10 @@
-package utilities
+package org.validoc.utilities
 
-import domain.{ServicesFixture, TestReq1, TestReq2, UnitSpec}
-import utilities.kleisli.{Kleisli, Kleislis}
+import org.validoc.utilities.kleisli.Kleislis
+import utilities.kleisli.Kleisli
 
-import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits._
 
 class MergerSpec extends UnitSpec with ServicesFixture with Kleislis {
 
@@ -15,13 +15,9 @@ class MergerSpec extends UnitSpec with ServicesFixture with Kleislis {
     val mockService1: Kleisli[TestReq1, String] = {
       req: TestReq1 => Future.successful(req.toString)
     }
-    val mockService2: Kleisli[TestReq1, String] = {
-      req: TestReq1 => Future.successful(req.toString)
+    val mockService2: Kleisli[TestReq2, String] = {
+      req: TestReq2 => Future.successful(req.toString)
     }
-
-    (mockService1, mockService2).shortcircuit
-
-
 
 
     (mockService1, mockService2).merge[String, String].apply("mainId").await shouldBe "TestReq1(mainId)TestReq2(mainId)"

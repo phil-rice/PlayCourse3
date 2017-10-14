@@ -1,4 +1,4 @@
-package utilities
+package org.validoc.utilities
 
 import scala.concurrent.{ExecutionContext, Future}
 

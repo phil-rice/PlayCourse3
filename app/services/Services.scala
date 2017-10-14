@@ -3,18 +3,20 @@ package services
 import javax.inject.{Inject, Singleton}
 
 import domain._
-import play.api.libs.ws.WSClient
+import org.validoc.utilities.profile.TryProfileData
+import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import utilities.kleisli.Kleisli
-import utilities.profile.TryProfileData
+import utilities.objectify.ObjectifyLanguage
 
 import scala.concurrent.ExecutionContext
 
 
 @Singleton()
-class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext) {
+class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext) extends ObjectifyLanguage {
 
   import RawHttpServices.forTests._
-  import utilities.kleisli.Kleislis._
+  import org.validoc.utilities.kleisli.Kleislis._
+  def http: Kleisli[WSRequest, WSResponse] = { httpRequest: WSRequest => httpRequest.execute() }
 
   val vogueProfileData = new TryProfileData
   val billboardProfileData = new TryProfileData

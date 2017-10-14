@@ -1,7 +1,8 @@
-package utilities.profile
+package org.validoc.utilities.profile
 
-import utilities.NanoTimeService
-import utilities.kleisli.{Kleisli, KleisliDelegate}
+import org.validoc.utilities.NanoTimeService
+import org.validoc.utilities.kleisli.KleisliDelegate
+import utilities.kleisli.Kleisli
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}

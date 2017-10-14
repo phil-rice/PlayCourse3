@@ -1,7 +1,7 @@
 package domain
 
-import utilities.debugEndpoint.MakeDebugQuery
-import utilities.kleisli.{FindChildId, Merge}
+import org.validoc.utilities.debugEndpoint.MakeDebugQuery
+import org.validoc.utilities.kleisli.{FindChildId, Merge}
 
 trait HomePageQuery
 

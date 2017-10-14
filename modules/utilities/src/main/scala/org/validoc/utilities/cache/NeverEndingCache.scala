@@ -1,6 +1,7 @@
-package utilities.cache
+package org.validoc.utilities.cache
 
-import utilities.kleisli.{Kleisli, KleisliDelegate}
+import org.validoc.utilities.kleisli.KleisliDelegate
+import utilities.kleisli.Kleisli
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future

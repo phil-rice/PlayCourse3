@@ -1,6 +1,6 @@
 package domain
 
-import utilities.kleisli.{FindChildId, Merge}
+import org.validoc.utilities.{MergerFixture, UnitSpec}
 
 class HomePageSpec extends UnitSpec with MergerFixture[HomePageQuery, HomePage, EnrichedPromotion, EnrichedMostPopular] {
 

@@ -1,8 +1,8 @@
-package utilities.profile
+package org.validoc.utilities.profile
 
 import java.util.concurrent.atomic.{AtomicInteger, AtomicLong}
 
-import utilities.HasShortToString
+import org.validoc.utilities.HasShortToString
 
 
 class ProfilingBucket {

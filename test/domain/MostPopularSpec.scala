@@ -1,13 +1,7 @@
 package domain
 
-import org.scalamock.scalatest.MockFactory
-import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
-import services.HostAndPorts
-import utilities.kleisli.{Kleisli, Kleislis}
-import utilities.objectify.{BuildFromResponse, BuildRequestFrom}
-
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import org.validoc.utilities.UnitSpec
+import org.validoc.utilities.kleisli.Kleislis
 
 
 class MostPopularSpec extends UnitSpec with BuildRequestFromFixture[MostPopularQuery] with BuildFromResponseFixture[MostPopularQuery, MostPopular] with Kleislis {

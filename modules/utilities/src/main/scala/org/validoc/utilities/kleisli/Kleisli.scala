@@ -1,6 +1,6 @@
-package utilities.kleisli
+package org.validoc.utilities.kleisli
 
-import play.api.libs.ws.{WSRequest, WSResponse}
+import utilities.kleisli.Kleisli
 
 trait KleisliTransformer[Req1, Res1, Req2, Res2] extends (Kleisli[Req1, Res1] => Kleisli[Req2, Res2])
 

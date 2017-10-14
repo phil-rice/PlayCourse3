@@ -2,7 +2,7 @@ package domain
 
 import play.api.libs.ws.{WSClient, WSResponse}
 import services.HostAndPorts
-import utilities.debugEndpoint.MakeDebugQuery
+import org.validoc.utilities.debugEndpoint.MakeDebugQuery
 import utilities.objectify.{BuildFromResponse, BuildRequestFrom}
 
 

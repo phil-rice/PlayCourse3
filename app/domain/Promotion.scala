@@ -2,8 +2,8 @@ package domain
 
 import play.api.libs.ws.{WSClient, WSResponse}
 import services.HostAndPorts
-import utilities.debugEndpoint.MakeDebugQuery
-import utilities.kleisli.{ChildReqFinder, Enricher}
+import org.validoc.utilities.debugEndpoint.MakeDebugQuery
+import org.validoc.utilities.kleisli.{ChildReqFinder, Enricher}
 import utilities.objectify.{BuildFromResponse, BuildRequestFrom}
 
 trait PromotionQuery

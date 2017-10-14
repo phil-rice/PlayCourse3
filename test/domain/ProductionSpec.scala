@@ -1,5 +1,7 @@
 package domain
 
+import org.validoc.utilities.UnitSpec
+
 class ProductionSpec extends UnitSpec with BuildFromResponseFixture[ProductionId, Production] with BuildRequestFromFixture[ProductionId] {
 
   val productionId = ProductionId("someId")

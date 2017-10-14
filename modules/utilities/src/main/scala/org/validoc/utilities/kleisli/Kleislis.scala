@@ -1,10 +1,9 @@
-package utilities.kleisli
+package org.validoc.utilities.kleisli
 
-import play.api.libs.ws.{WSRequest, WSResponse}
-import utilities.cache.{CacheLanguage, NeverEndingCache}
-import utilities.debugEndpoint.DebugEndPointLanguage
-import utilities.objectify.ObjectifyLanguage
-import utilities.profile.ProfilingLanguage
+import org.validoc.utilities.cache.CacheLanguage
+import org.validoc.utilities.debugEndpoint.DebugEndPointLanguage
+import org.validoc.utilities.profile.ProfilingLanguage
+import utilities.kleisli.Kleisli
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -18,8 +17,7 @@ trait Enricher[ParentReq, ParentRes, ChildRes, EnrichedParent] extends
   ((ParentReq, ParentRes, Seq[ChildRes]) => EnrichedParent)
 
 
-trait Kleislis extends CacheLanguage with ProfilingLanguage with ObjectifyLanguage  with DebugEndPointLanguage{
-  def http: Kleisli[WSRequest, WSResponse] = { httpRequest: WSRequest => httpRequest.execute() }
+trait Kleislis extends CacheLanguage with ProfilingLanguage  with DebugEndPointLanguage{
 
   implicit class KleisliPimper[Req, Res](k: Req => Future[Res]) {
     def |+|[Req2, Res2](tr: KleisliTransformer[Req, Res, Req2, Res2]) = tr(k)

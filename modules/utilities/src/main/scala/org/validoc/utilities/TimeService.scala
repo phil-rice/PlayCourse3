@@ -1,7 +1,6 @@
-package utilities
+package org.validoc.utilities
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.higherKinds
 import scala.util.Try
 
 trait NanoTimeService {

@@ -1,6 +1,6 @@
 package domain
 
-import utilities.kleisli.Enricher
+import org.validoc.utilities.UnitSpec
 
 class EnrichMostPopularSpec extends UnitSpec with EnricherFixture[MostPopularQuery, MostPopular, Programme, EnrichedMostPopular] {
 

@@ -1,6 +1,6 @@
 package domain
 
-import utilities.objectify.BuildRequestFrom
+import org.validoc.utilities.UnitSpec
 
 class ProgrammeSpec extends UnitSpec with BuildRequestFromFixture[ProgrammeId] with BuildFromResponseFixture[ProgrammeId, Programme] {
 

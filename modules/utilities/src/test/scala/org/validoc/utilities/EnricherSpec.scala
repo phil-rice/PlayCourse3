@@ -1,10 +1,8 @@
-package utilities
+package org.validoc.utilities
 
-import domain.{ServicesFixture, UnitSpec}
-import utilities.kleisli.Kleislis
-
+import org.validoc.utilities.kleisli.Kleislis
+import utilities.kleisli.Kleisli
 import scala.concurrent.ExecutionContext.Implicits._
-
 class EnricherSpec extends UnitSpec with ServicesFixture with Kleislis {
 
   behavior of "Enricher"

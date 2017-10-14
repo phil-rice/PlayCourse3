@@ -1,9 +1,9 @@
-package utilities.debugEndpoint
+package org.validoc.utilities.debugEndpoint
 
-import utilities.kleisli.{Kleisli, KleisliTransformer}
+import org.validoc.utilities.kleisli.KleisliTransformer
+import utilities.kleisli.Kleisli
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.ClassTag
 
 trait MakeDebugQuery[Req] extends (String => Req)
 
@@ -18,8 +18,8 @@ object DebugToString {
 
 trait DebugEndPointLanguage {
 
-  import utilities.kleisli.Kleislis._
-  import utilities.Arrows._
+  import org.validoc.utilities.Arrows._
+  import org.validoc.utilities.kleisli.Kleislis._
 
 
   def debug[Req, Res](implicit makeQuery: MakeDebugQuery[Req], debugToString: DebugToString[Res], ex: ExecutionContext): KleisliTransformer[Req, Res, String, String] =

@@ -1,5 +1,7 @@
 package domain
 
+import org.validoc.utilities.UnitSpec
+
 
 class PromotionSpec extends UnitSpec with BuildRequestFromFixture [PromotionQuery]with BuildFromResponseFixture[PromotionQuery, Promotion] {
 

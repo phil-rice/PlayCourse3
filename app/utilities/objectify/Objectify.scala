@@ -1,8 +1,9 @@
 package utilities.objectify
 
+import org.validoc.utilities.kleisli.KleisliTransformer
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import services.HostAndPorts
-import utilities.kleisli.{Kleisli, KleisliTransformer}
+import utilities.kleisli.Kleisli
 
 import scala.concurrent.{ExecutionContext, Future}
 
