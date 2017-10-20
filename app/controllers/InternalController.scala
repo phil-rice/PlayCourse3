@@ -14,7 +14,7 @@ class InternalController @Inject()(cc: ControllerComponents, services: Services)
   implicit val ec = ExecutionContext.global
 
   def allServices(name: String, param: String) = Action.async { implicit request =>
-    services.debugEndpoints(name)(param).map(result => Ok(result).as("text/html"))
+    services.allDebugEndPoints(name)(param).map(result => Ok(result).as("text/html"))
   }
 
 }

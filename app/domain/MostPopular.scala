@@ -1,9 +1,12 @@
 package domain
 
+import domain.HomePage.HomePageToResponse.Ok
 import play.api.libs.ws.{WSClient, WSResponse}
 import services.HostAndPorts
 import org.validoc.utilities.debugEndpoint.MakeDebugQuery
+import org.validoc.utilities.endpoint.{EndPointToRes, MakeReqFromHttpReq}
 import org.validoc.utilities.kleisli.{ChildReqFinder, Enricher}
+import play.api.mvc.{Request, Result, Results}
 import services.objectify.{BuildFromResponse, BuildRequestFrom}
 
 trait MostPopularQuery
@@ -16,6 +19,9 @@ object MostPopularQuery extends MostPopularQuery {
 
   implicit object MakeDebugQueryForMostPopularQuery extends MakeDebugQuery[MostPopularQuery] {
     override def apply(v1: String) = MostPopularQuery
+  }
+  implicit object MakeEndPointQueryForMostPopularQuery extends MakeReqFromHttpReq [Request[_] , MostPopularQuery] {
+    override def apply(v1: Request[_]) = MostPopularQuery
   }
 
   implicit object BuilderForVogueRequest extends BuildRequestFrom[MostPopularQuery] {
@@ -36,12 +42,16 @@ object MostPopular {
     override def apply(v1: MostPopular) = v1.programmeIds
   }
 
+
 }
 
 object EnrichedMostPopular {
 
   implicit object EnricherForMostPopular extends Enricher[MostPopularQuery, MostPopular, Programme, EnrichedMostPopular] {
     override def apply(v1: MostPopularQuery, v2: MostPopular, v3: Seq[Programme]) = EnrichedMostPopular(v3)
+  }
+  implicit  object EnrichedMostPopularToResponse extends Results with  EndPointToRes[Result, EnrichedMostPopular] {
+    override def apply(v1: EnrichedMostPopular) = Ok(v1.toString).as("text/html")
   }
 
 } 

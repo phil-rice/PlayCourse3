@@ -3,16 +3,21 @@ package services
 import javax.inject.{Inject, Singleton}
 
 import domain._
+import org.validoc.utilities.debugEndpoint.DebugEndPointLanguage
+import org.validoc.utilities.endpoint.EndPointLanguage
+import org.validoc.utilities.kleisli.{FindChildId, Merge}
 import org.validoc.utilities.profile.TryProfileData
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
+import play.api.mvc.{Request, Result}
+import play.mvc.Http.Response
 import utilities.kleisli.Kleisli
 import services.objectify.ObjectifyLanguage
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton()
-class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext, rawHttpServices: RawHttpServices) extends ObjectifyLanguage {
+class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext, rawHttpServices: RawHttpServices) extends ObjectifyLanguage with DebugEndPointLanguage with EndPointLanguage[Request[_], Result] {
 
   import rawHttpServices._
   import org.validoc.utilities.kleisli.Kleislis._
@@ -24,30 +29,16 @@ class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext, rawH
   val fnordProductionProfileData = new TryProfileData
   val fnordProgrammeProfileData = new TryProfileData
 
+  val vogue: Kleisli[MostPopularQuery, MostPopular] = vogueHttp |+| profile(vogueProfileData) |+| objectify[MostPopularQuery, MostPopular] |+| cache |+| debug("vogue")
 
-  val vogue: Kleisli[MostPopularQuery, MostPopular] = vogueHttp |+| profile(vogueProfileData) |+| objectify[MostPopularQuery, MostPopular] |+| cache
+  val billboard: Kleisli[PromotionQuery, Promotion] = billboardHttp |+| profile(billboardProfileData) |+| objectify[PromotionQuery, Promotion] |+| cache |+| debug("billboard")
 
-  val billboard: Kleisli[PromotionQuery, Promotion] = (billboardHttp) |+| profile(billboardProfileData) |+| objectify[PromotionQuery, Promotion] |+| cache
+  val productionFnord: Kleisli[ProductionId, Production] = fnordProductionHttp |+| profile(fnordProductionProfileData) |+| objectify[ProductionId, Production] |+| debug("production")
 
-  val productionFnord: Kleisli[ProductionId, Production] = (fnordProductionHttp) |+| profile(fnordProductionProfileData) |+| objectify[ProductionId, Production]
+  val programmeFnord: Kleisli[ProgrammeId, Programme] = fnordProgrammeHttp |+| profile(fnordProgrammeProfileData) |+| objectify[ProgrammeId, Programme] |+| debug("programme")
 
-  val programmeFnord: Kleisli[ProgrammeId, Programme] = (fnordProgrammeHttp) |+| profile(fnordProgrammeProfileData) |+| objectify[ProgrammeId, Programme]
-
-
-  val enrichedPromotion: Kleisli[PromotionQuery, EnrichedPromotion] = (billboard, productionFnord).enrich[EnrichedPromotion]
-  val enrichedMostPopular: Kleisli[MostPopularQuery, EnrichedMostPopular] = (vogue, programmeFnord).enrich[EnrichedMostPopular]
-
-  val homePage: Kleisli[HomePageQuery, HomePage] = (enrichedPromotion, enrichedMostPopular).merge[HomePageQuery, HomePage]
-
-  val debugEndpoints = Map(
-    "vogue" -> (vogue |+| debug),
-    "billboard" -> (billboard |+| debug),
-    "production" -> (productionFnord |+| debug),
-    "programme" -> (programmeFnord |+| debug),
-    "enrichedPromotion" -> (enrichedPromotion |+| debug),
-    "enrichedMostPopular" -> (enrichedMostPopular |+| debug),
-    "homePage" -> (homePage |+| debug)
-  )
-
+  val enrichedPromotion: Kleisli[PromotionQuery, EnrichedPromotion] = combine(billboard, productionFnord).enrich[EnrichedPromotion] |+| debug("enriched_promotion")
+  val enrichedMostPopular: Kleisli[MostPopularQuery, EnrichedMostPopular] = combine(vogue, programmeFnord).enrich[EnrichedMostPopular] |+| debug("enriched_most_popular") |+| endPoint("most_popular")
+  val homePage: Kleisli[HomePageQuery, HomePage] = combine(enrichedPromotion, enrichedMostPopular).merge[HomePageQuery, HomePage] |+| debug("home_page") |+| endPoint("homepage")
 
 }

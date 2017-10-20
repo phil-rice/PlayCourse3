@@ -14,6 +14,7 @@ GET        /                             controllers.HomeController.index
 #GET        /internal/homePage                   controllers.InternalController.homePage
 GET        /internal/:name               controllers.InternalController.allServices(name, param: String = "")
 GET        /internal/:name/:param        controllers.InternalController.allServices(name, param)
+GET        /:name                        controllers.HomeController.allServices(name)
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file                 controllers.Assets.versioned(path="/public", file: Asset)

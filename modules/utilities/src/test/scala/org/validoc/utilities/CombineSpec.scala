@@ -6,7 +6,7 @@ import utilities.kleisli.Kleisli
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
 
-class MergerSpec extends UnitSpec with ServicesFixture with Kleislis {
+class CombineSpec extends UnitSpec with ServicesFixture with Kleislis {
 
   behavior of "KleisliMerger"
 
@@ -19,7 +19,6 @@ class MergerSpec extends UnitSpec with ServicesFixture with Kleislis {
       req: TestReq2 => Future.successful(req.toString)
     }
 
-
-    (mockService1, mockService2).merge[String, String].apply("mainId").await shouldBe "TestReq1(mainId)TestReq2(mainId)"
+    combine(mockService1, mockService2).merge[String, String].apply("mainId").await shouldBe "TestReq1(mainId)TestReq2(mainId)"
   }
 }

@@ -1,6 +1,7 @@
 package org.validoc.utilities
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 object Arrows {
 
@@ -20,6 +21,11 @@ object Arrows {
   }
 
   implicit class FuturePimper[T](futT: Future[T])(implicit ex: ExecutionContext) {
+
+    def sideeffect(fn: Try[T] => Unit) = {
+      futT.onComplete(fn); futT
+    }
+
     def ~~>[T1](fn: T => T1) = futT.map(fn)
 
     def ~~~>[T1](fn: T => Future[T1]): Future[T1] = futT.flatMap(fn)
