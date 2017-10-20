@@ -3,6 +3,7 @@ package services
 import javax.inject.{Inject, Singleton}
 
 import domain._
+import org.validoc.utilities.{MutableServiceTrees, ServiceTrees}
 import org.validoc.utilities.debugEndpoint.DebugEndPointLanguage
 import org.validoc.utilities.endpoint.EndPointLanguage
 import org.validoc.utilities.kleisli.{FindChildId, Merge}
@@ -18,6 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext, rawHttpServices: RawHttpServices) extends ObjectifyLanguage with DebugEndPointLanguage with EndPointLanguage[Request[_], Result] {
+  implicit val serviceTrees = new MutableServiceTrees()
 
   import rawHttpServices._
   import org.validoc.utilities.kleisli.Kleislis._

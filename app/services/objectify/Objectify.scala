@@ -1,11 +1,13 @@
 package services.objectify
 
+import org.validoc.utilities.{ServiceTrees, ServiceType}
 import org.validoc.utilities.kleisli.KleisliTransformer
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import services.HostAndPorts
 import utilities.kleisli.Kleisli
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
 trait BuildRequestFrom[Req] {
   def apply(ws: WSClient)(t: Req)(implicit hostAndPorts: HostAndPorts): WSRequest
@@ -28,10 +30,12 @@ class Objectify[Req, Res](ws: WSClient, delegate: WSRequest => Future[WSResponse
   override def apply(req: Req): Future[Res] = delegate(makeRequest(req)).map(buildFromResponse(req))
 }
 
+case object ObjectifyService extends ServiceType
+
 trait ObjectifyLanguage {
 
-  def objectify[Req: BuildRequestFrom, Res](implicit wSClient: WSClient, ex: ExecutionContext, buildFromResponse: BuildFromResponse[Req, Res]) = new KleisliTransformer[WSRequest, WSResponse, Req, Res] {
-    override def apply(v1: Kleisli[WSRequest, WSResponse]) = new Objectify[Req, Res](wSClient, v1)
+  def objectify[Req: BuildRequestFrom : ClassTag, Res: ClassTag](implicit wSClient: WSClient, ex: ExecutionContext, buildFromResponse: BuildFromResponse[Req, Res], serviceTrees: ServiceTrees) = new KleisliTransformer[WSRequest, WSResponse, Req, Res] {
+    override def apply(v1: Kleisli[WSRequest, WSResponse]) = serviceTrees.addOneChild(ObjectifyService, new Objectify[Req, Res](wSClient, v1), v1)
   }
 
 }

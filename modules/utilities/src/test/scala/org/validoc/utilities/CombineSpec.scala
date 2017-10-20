@@ -3,14 +3,15 @@ package org.validoc.utilities
 import org.validoc.utilities.kleisli.Kleislis
 import utilities.kleisli.Kleisli
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.Future
 
 class CombineSpec extends UnitSpec with ServicesFixture with Kleislis {
 
   behavior of "KleisliMerger"
 
   it should "call the findChildIds, pass these to the child services and merge the results" in {
+
 
     val mockService1: Kleisli[TestReq1, String] = {
       req: TestReq1 => Future.successful(req.toString)
