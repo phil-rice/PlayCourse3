@@ -19,13 +19,13 @@ trait ChildReqFinder[Parent, ChildReq] extends (Parent => Seq[ChildReq])
 trait Enricher[ParentReq, ParentRes, ChildRes, EnrichedParent] extends
   ((ParentReq, ParentRes, Seq[ChildRes]) => EnrichedParent)
 
-case object Merge extends ServiceType
+trait MergeServiceType extends ServiceType
 
-case object Enrich extends ServiceType
+trait EnrichServiceType extends ServiceType
 
 class Combine[Req1, Res1, Req2, Res2](one: Kleisli[Req1, Res1], two: Kleisli[Req2, Res2]) {
   def merge[MainReq: ClassTag, MainRes: ClassTag](implicit findId1: FindChildId[MainReq, Req1], findId2: FindChildId[MainReq, Req2], merge: Merge[Res1, Res2, MainRes], serviceTrees: ServiceTrees, ex: ExecutionContext): Kleisli[MainReq, MainRes] =
-    serviceTrees.addService[MainReq, MainRes](Merge, { main =>
+    serviceTrees.add[MergeServiceType].addServices({ main =>
       val f1: Future[Res1] = one(findId1(main))
       val f2: Future[Res2] = two(findId2(main))
       for {v1 <- f1; v2 <- f2} yield merge(v1, v2)
@@ -36,7 +36,7 @@ class Combine[Req1, Res1, Req2, Res2](one: Kleisli[Req1, Res1], two: Kleisli[Req
                                     serviceTrees: ServiceTrees,
                                     classTagReq1: ClassTag[Req1],
                                     executionContext: ExecutionContext): Kleisli[Req1, EnrichedRes] =
-    serviceTrees.addService[Req1, EnrichedRes](Enrich, { req =>
+    serviceTrees.add[EnrichServiceType].addServices({ req =>
       for {
         parent <- one(req)
         childIds = childReqFinder(parent)

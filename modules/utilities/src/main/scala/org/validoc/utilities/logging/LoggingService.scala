@@ -42,12 +42,13 @@ object Logger {
 
 }
 
-case object LoggingService extends ServiceType
+trait LoggingServiceType extends ServiceType
+
 trait LoggingLanguage {
 
   def logging[Req: LogData : ClassTag, Res: LogData : ClassTag](pattern: String)
                                                                (implicit logger: Logger, ec: ExecutionContext, logDataForThrowable: LogData[Throwable], serviceTrees: ServiceTrees): KleisliDelegate[Req, Res] =
     new KleisliDelegate[Req, Res] {
-      override def apply(delegate: Kleisli[Req, Res]) = serviceTrees.addOneChild(LoggingService, delegate.sideeffectWithReq(Logger.called(logger, pattern)), delegate)
+      override def apply(delegate: Kleisli[Req, Res]) = serviceTrees.add[LoggingServiceType].addOneChild(delegate.sideeffectWithReq(Logger.called(logger, pattern)), delegate)
     }
 }

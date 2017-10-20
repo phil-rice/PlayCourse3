@@ -30,12 +30,12 @@ class Objectify[Req, Res](ws: WSClient, delegate: WSRequest => Future[WSResponse
   override def apply(req: Req): Future[Res] = delegate(makeRequest(req)).map(buildFromResponse(req))
 }
 
-case object ObjectifyService extends ServiceType
+trait ObjectifyServiceType extends ServiceType
 
 trait ObjectifyLanguage {
 
   def objectify[Req: BuildRequestFrom : ClassTag, Res: ClassTag](implicit wSClient: WSClient, ex: ExecutionContext, buildFromResponse: BuildFromResponse[Req, Res], serviceTrees: ServiceTrees) = new KleisliTransformer[WSRequest, WSResponse, Req, Res] {
-    override def apply(v1: Kleisli[WSRequest, WSResponse]) = serviceTrees.addOneChild(ObjectifyService, new Objectify[Req, Res](wSClient, v1), v1)
+    override def apply(v1: Kleisli[WSRequest, WSResponse]) = serviceTrees.add[ObjectifyServiceType].addOneChild(new Objectify[Req, Res](wSClient, v1), v1)
   }
 
 }

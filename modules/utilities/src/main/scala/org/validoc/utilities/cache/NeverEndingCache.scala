@@ -8,7 +8,7 @@ import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 import scala.reflect.ClassTag
 
-case object Cache extends ServiceType
+trait Cache extends ServiceType
 
 class NeverEndingCache[Req, Res](delegate: Kleisli[Req, Res]) extends Kleisli[Req, Res] {
   val trieMap = TrieMap[Req, Future[Res]]()
@@ -20,6 +20,9 @@ class NeverEndingCache[Req, Res](delegate: Kleisli[Req, Res]) extends Kleisli[Re
 trait CacheLanguage {
 
   def cache[Req: ClassTag, Res: ClassTag](implicit serviceTrees: ServiceTrees) = new KleisliDelegate[Req, Res] {
-    override def apply(delegate: Kleisli[Req, Res]) = serviceTrees.addOneChild(Cache, new NeverEndingCache(delegate), delegate)
+    override def apply(delegate: Kleisli[Req, Res]) = {
+      val cache = new NeverEndingCache(delegate)
+      serviceTrees.add[Cache].addOneChild[Req, Res](cache, delegate)
+    }
   }
 }

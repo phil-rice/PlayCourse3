@@ -9,7 +9,7 @@ import utilities.kleisli.Kleisli
 import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 
-case object EndPoint extends ServiceType
+trait EndPoint extends ServiceType
 
 trait MakeReqFromHttpReq[HttpReq, Req] extends (HttpReq => Req)
 
@@ -24,7 +24,7 @@ trait EndPointLanguage[HttpReq, HttpRes] {
       override def apply(kleisli: Kleisli[Req, Res]): Kleisli[Req, Res] = {
         val endPoint: Kleisli[HttpReq, HttpRes] = makeQuery ~> kleisli ~> endpointToHttpRes
         allEndPoints = allEndPoints + (name -> endPoint)
-        serviceTrees.addOneChild(EndPoint, endPoint, kleisli)
+        serviceTrees.add[EndPoint].addOneChild(endPoint, kleisli)
         kleisli
       }
     }
