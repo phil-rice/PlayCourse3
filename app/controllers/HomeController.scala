@@ -2,6 +2,8 @@ package controllers
 
 import javax.inject._
 
+import org.validoc.utilities.debugEndpoint.DebugEndPoint
+import org.validoc.utilities.endpoint.EndPoint
 import play.api.mvc._
 import services.Services
 
@@ -22,8 +24,10 @@ class HomeController @Inject()(cc: ControllerComponents, services: Services) ext
     Ok("").as("text/html")
   }
 
+  val allEndPoints = services.serviceTrees.toMap[EndPoint, Request[_], Result](_.name)
+
   def allServices(name: String) = Action.async { implicit request =>
-    services.allEndPoints(name)(request)
+    allEndPoints(name)(request)
   }
 
 }

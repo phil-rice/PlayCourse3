@@ -6,7 +6,7 @@ import utilities.kleisli.Kleisli
 
 import scala.concurrent.ExecutionContext
 
-trait DebugEndPoint extends ServiceType
+case class DebugEndPoint(name: String) extends ServiceType
 
 trait MakeDebugQuery[Req] extends (String => Req)
 
@@ -24,14 +24,10 @@ trait DebugEndPointLanguage {
   import org.validoc.utilities.Arrows._
   import org.validoc.utilities.kleisli.Kleislis._
 
-  var allDebugEndPoints = Map[String, Kleisli[String, String]]()
-
   def debug[Req, Res](name: String)(implicit makeQuery: MakeDebugQuery[Req], debugToString: DebugToString[Res], ex: ExecutionContext, serviceTrees: ServiceTrees): KleisliDelegate[Req, Res] =
     new KleisliDelegate[Req, Res] {
       override def apply(kleisli: Kleisli[Req, Res]): Kleisli[Req, Res] = {
-        val debugEndPoint: Kleisli[String, String] = makeQuery ~> kleisli ~> debugToString
-        allDebugEndPoints = allDebugEndPoints + (name -> debugEndPoint)
-        serviceTrees.add[DebugEndPoint].addOneChild(debugEndPoint, kleisli)
+        serviceTrees.add(DebugEndPoint(name)).addOneChild[String, String](makeQuery ~> kleisli ~> debugToString, kleisli)
         kleisli
       }
     }

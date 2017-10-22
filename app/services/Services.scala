@@ -3,19 +3,20 @@ package services
 import javax.inject.{Inject, Singleton}
 
 import domain._
-import org.validoc.utilities.{MutableServiceTrees, ServiceTrees}
+import org.validoc.utilities.{MutableServiceTrees, ServiceTrees, ServiceType}
 import org.validoc.utilities.debugEndpoint.DebugEndPointLanguage
 import org.validoc.utilities.endpoint.EndPointLanguage
 import org.validoc.utilities.kleisli.{FindChildId, Merge}
 import org.validoc.utilities.profile.TryProfileData
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
-import play.api.mvc.{Request, Result}
+import play.api.mvc.{AnyContent, Request, Result}
 import play.mvc.Http.Response
 import utilities.kleisli.Kleisli
 import services.objectify.ObjectifyLanguage
 
 import scala.concurrent.{ExecutionContext, Future}
 
+trait HttpService extends ServiceType
 
 @Singleton()
 class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext, rawHttpServices: RawHttpServices) extends ObjectifyLanguage with DebugEndPointLanguage with EndPointLanguage[Request[_], Result] {
@@ -24,14 +25,21 @@ class Services @Inject()(implicit wSClient: WSClient, ex: ExecutionContext, rawH
   import rawHttpServices._
   import org.validoc.utilities.kleisli.Kleislis._
 
-  def http: Kleisli[WSRequest, WSResponse] = { httpRequest: WSRequest => httpRequest.execute() }
+  //  def http: Kleisli[WSRequest, WSResponse] = { httpRequest: WSRequest => httpRequest.execute() }
 
   val vogueProfileData = new TryProfileData
   val billboardProfileData = new TryProfileData
   val fnordProductionProfileData = new TryProfileData
   val fnordProgrammeProfileData = new TryProfileData
 
-  val vogue: Kleisli[MostPopularQuery, MostPopular] = vogueHttp |+| profile(vogueProfileData) |+| objectify[MostPopularQuery, MostPopular] |+| cache |+| debug("vogue")
+  serviceTrees.addRoots[HttpService, WSRequest, WSResponse](vogueHttp, billboardHttp, fnordProductionHttp, fnordProgrammeHttp)
+
+  println("Vogue: " + serviceTrees.treeForService(vogueHttp))
+  val vogue: Kleisli[MostPopularQuery, MostPopular] = vogueHttp |+|
+    profile(vogueProfileData) |+|
+    objectify[MostPopularQuery, MostPopular] |+|
+    cache |+|
+    debug("vogue")
 
   val billboard: Kleisli[PromotionQuery, Promotion] = billboardHttp |+| profile(billboardProfileData) |+| objectify[PromotionQuery, Promotion] |+| cache |+| debug("billboard")
 

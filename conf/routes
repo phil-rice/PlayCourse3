@@ -12,6 +12,7 @@ GET        /                             controllers.HomeController.index
 #GET        /internal/enrichedMostPopular        controllers.InternalController.enrichedMostPopular
 #GET        /internal/enrichedPromotion          controllers.InternalController.enrichedPromotion
 #GET        /internal/homePage                   controllers.InternalController.homePage
+GET        /internal                     controllers.InternalController.index
 GET        /internal/:name               controllers.InternalController.allServices(name, param: String = "")
 GET        /internal/:name/:param        controllers.InternalController.allServices(name, param)
 GET        /:name                        controllers.HomeController.allServices(name)

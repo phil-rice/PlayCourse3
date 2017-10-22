@@ -19,10 +19,11 @@ val basicSettings = Seq(
   libraryDependencies += "org.scalamock" %% "scalamock-scalatest-support" % versions.scalamock % Test)
 
 val utilitiesSettings = basicSettings ++ Seq(
-//  libraryDependencies += "org.typelevel" %% "macro-compat" % "1.1.1",
-//  libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
-//  libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.11.7",
-//  libraryDependencies += compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.patch)
+  libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+  //  libraryDependencies += "org.typelevel" %% "macro-compat" % "1.1.1",
+  //  libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
+  //  libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.11.7",
+  //  libraryDependencies += compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.patch)
 )
 
 val playSettings = basicSettings ++ Seq(

@@ -24,11 +24,11 @@ class MockRawHttpServices @Inject()(wsClient: WSClient) extends RawHttpServices 
 
   def mockFnord(prefix: String) = mockHttp(uri => prefix + uri.split("/").last)
 
-  override def vogueHttp = mockHttp(_ => "1,2,3")
+  override val vogueHttp = mockHttp(_ => "1,2,3")
 
-  override def billboardHttp = mockHttp(_ => "4,5,6")
+  override val billboardHttp = mockHttp(_ => "4,5,6")
 
-  override def fnordProductionHttp = mockFnord("Production_")
+  override val fnordProductionHttp = mockFnord("Production_")
 
-  override def fnordProgrammeHttp = mockFnord("Programme_")
+  override val fnordProgrammeHttp = mockFnord("Programme_")
 }
