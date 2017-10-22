@@ -17,7 +17,7 @@ trait Tree {
 
   def st: Option[RawST]
 
-  def stClass: Class[RawST]
+  implicit def stClassTag: ClassTag[RawST]
 
   implicit def reqClassTag: ClassTag[RawReq]
 
@@ -35,7 +35,7 @@ object Tree {
   implicit object TreeAsHtml extends AsHtml[Tree] {
     override def apply(tree: Tree) = {
       import tree._
-      Text(st.fold(DisplayString.functionDisplayString[RawReq, RawRes](stClass.getSimpleName))(stDisplayString))
+      Text(st.fold(DisplayString.functionDisplayStringForClass[RawST, RawReq, RawRes]("ServiceType"))(stDisplayString))
     }
   }
 
@@ -46,16 +46,6 @@ case class ServiceTree[ST <: ServiceType, Req, Res](st: Option[ST], service: Req
   type RawRes = Res
   type RawST = ST
 
-  override def stClass = stClassTag.runtimeClass.asInstanceOf[Class[ST]]
-}
-
-object ServiceTree {
-  implicit def DisplayStringsForServiceTree[ST <: ServiceType, Req, Res] = new DisplayString[ServiceTree[ST, Req, Res]] {
-    override def apply(tree: ServiceTree[ST, Req, Res]) = {
-      import tree._
-      tree.st.fold(DisplayString.functionDisplayString[Req, Res](stClassTag.runtimeClass.getSimpleName))(stDisplayString)
-    }
-  }
 }
 
 trait ServiceTreeAdder[ST <: ServiceType] {
@@ -91,9 +81,9 @@ trait ServiceTrees {
 
   def add[ST <: ServiceType : ClassTag : DisplayString](st: ST): ServiceTreeAdder[ST]
 
-  def servicesWith[ST <: ServiceType : ClassTag, Req: ClassTag, Res: ClassTag]: List[(Option[ST], Kleisli[Req, Res])]
+  def servicesWith[ST <: ServiceType : ClassTag, Req: ClassTag, Res: ClassTag]: List[ServiceTree[ST, Req, Res]]
 
-  def servicesWithSome[ST <: ServiceType : ClassTag, Req: ClassTag, Res: ClassTag]: List[(ST, Kleisli[Req, Res])] = servicesWith[ST, Req, Res].collect({ case (Some(st), tree) => (st, tree) })
+  def servicesWithSome[ST <: ServiceType : ClassTag, Req: ClassTag, Res: ClassTag]: List[(ST, Kleisli[Req, Res])] = servicesWith[ST, Req, Res].collect({ case tree if tree.st.isDefined => (tree.st.get, tree.service) })
 
   def toMap[ST <: ServiceType : ClassTag, Req: ClassTag, Res: ClassTag](fn: ST => String): Map[String, Kleisli[Req, Res]] = servicesWithSome[ST, Req, Res].foldLeft(Map[String, Kleisli[Req, Res]]()) { case (acc, (st, k)) => acc + (fn(st) -> k) }
 }
@@ -134,7 +124,7 @@ class MutableServiceTrees extends ServiceTrees {
     list += tree
     service
   } catch {
-    case e: Exception => e.printStackTrace; throw e
+    case e: Exception => e.printStackTrace(); throw e
   }
 
   override def treeForService(kleisli: Kleisli[_, _]) = serviceToTree.get(kleisli)
@@ -145,27 +135,30 @@ class MutableServiceTrees extends ServiceTrees {
 
   def clazz[T: ClassTag] = implicitly[ClassTag[T]].runtimeClass
 
-  override def servicesWith[ST <: ServiceType : ClassTag, Req: ClassTag, Res: ClassTag]: List[(Option[ST], Kleisli[Req, Res])] = {
-    val list = classToListOfServices.get(clazz[ST]).getOrElse(mutable.MutableList()).toList
-    list.collect { case tree if tree.reqClassTag.runtimeClass == clazz[Req] && tree.resClassTag.runtimeClass == clazz[Res] && tree.st.fold(true)(x => x.getClass == clazz[ST]) => (tree.st.map(_.asInstanceOf[ST]), tree.service.asInstanceOf[Kleisli[Req, Res]]) }
+  override def servicesWith[ST <: ServiceType : ClassTag, Req: ClassTag, Res: ClassTag]: List[ServiceTree[ST, Req, Res]] = {
+    val list = classToListOfServices.getOrElse(clazz[ST], mutable.MutableList()).toList
+    list.collect { case tree if tree.reqClassTag.runtimeClass.isAssignableFrom(clazz[Req]) && tree.resClassTag.runtimeClass.isAssignableFrom(clazz[Res]) && tree.st.fold(true)(x => x.getClass == clazz[ST]) => tree.asInstanceOf[ServiceTree[ST, Req, Res]] }
   }
 }
 
-object IndentAnd {
-  implicit def defaultAsHtml[T](implicit asHtmlForT: AsHtml[T]): AsHtml[IndentAnd[T]] = new AsHtml[IndentAnd[T]] {
-    override def apply(v1: IndentAnd[T]) = {
-      println(s"In indent and ${v1.indent}: ${List.fill(v1.indent)(Text("&nbsp;")) ::: asHtmlForT(v1.t).toList}")
-      NodeSeq.fromSeq(List.fill(v1.indent * 4)(EntityRef("nbsp")) ::: asHtmlForT(v1.t).toList)
-    }
-  }
-}
+//object IndentAnd {
+//  implicit def defaultAsHtml[T](implicit asHtmlForT: AsHtml[T]): AsHtml[IndentAnd[T]] = new AsHtml[IndentAnd[T]] {
+//    override def apply(v1: IndentAnd[T]) = {
+//      println(s"In indent and ${v1.indent}: ${List.fill(v1.indent)(Text("&nbsp;")) ::: asHtmlForT(v1.t).toList}")
+//      NodeSeq.fromSeq(List.fill(v1.indent * 4)(EntityRef("nbsp")) ::: asHtmlForT(v1.t).toList)
+//    }
+//  }
+//}
 
 case class IndentAnd[T](indent: Int, t: T)
 
 class ServiceTreeAsMap(serviceTrees: ServiceTrees) {
-  def asString(serviceTree: Tree) = serviceTree.st.fold(serviceTree.stClass.getSimpleName)(st => st.toString)
 
-  def treeAsList = serviceTrees.roots.toList.sortBy(st => st.stClass.getSimpleName + "" + st.st).flatMap(asList(_, 0))
+  //  def treeAsList = serviceTrees.roots.toList.sortBy(st => st.stClass.getSimpleName + "" + st.st).flatMap(asList(_, 0))
+
+  def servicesAsList[ST <: ServiceType : ClassTag, Req: ClassTag, Res: ClassTag] = serviceTrees.servicesWith[ST, Req, Res].flatMap(asList(_, 0))
 
   def asList(serviceTree: Tree, depth: Int = 0): List[IndentAnd[Tree]] = List(IndentAnd(depth, serviceTree)) ++ serviceTree.children.flatMap(c => asList(c, depth + 1))
+
+
 }

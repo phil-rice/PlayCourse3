@@ -2,14 +2,16 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import domain._
-import org.validoc.utilities.{AsHtml, IndentAnd, ServiceTreeAsMap, Tree}
+import org.validoc.utilities.cache.Cache
 import org.validoc.utilities.debugEndpoint.DebugEndPoint
-import play.api.mvc.{AbstractController, ControllerComponents}
+import org.validoc.utilities.endpoint.EndPoint
+import org.validoc.utilities.{AsHtml, IndentAnd, ServiceTreeAsMap, Tree}
+import play.api.mvc.{AbstractController, ControllerComponents, Request, Result}
 import services.Services
 import utilities.kleisli.Kleisli
 
 import scala.concurrent.ExecutionContext
+import scala.xml.{EntityRef, NodeSeq}
 
 
 @Singleton
@@ -19,21 +21,45 @@ class InternalController @Inject()(cc: ControllerComponents, services: Services)
   import AsHtml.AsHtmlPimper
 
 
-  import IndentAnd.defaultAsHtml
+  val mapServiceToDebugEndPoint = services.serviceTrees.servicesWithSome[DebugEndPoint, String, String].foldLeft(Map[Kleisli[_, _], String]()) { case (acc, (st, service)) =>
+    acc + (st.actualEndPoint -> st.name)
+  }
+
+  def wrapInOptionalLink(tree: Tree)(nodeSeq: NodeSeq) =
+    mapServiceToDebugEndPoint.get(tree.service) match {
+      case Some(name) => <a href={"/internal/" + name}>
+        {nodeSeq}
+      </a>
+      case None => nodeSeq
+    }
 
   def index = Action { implicit request =>
     Ok(<html>
       <body>
-        <ul>
-          {new ServiceTreeAsMap(services.serviceTrees).treeAsList.map { t: IndentAnd[Tree] =>
-          <li>
-            {new AsHtmlPimper[IndentAnd[Tree]](t)(defaultAsHtml).asHtml}
-          </li>
+        <table>
+          {new ServiceTreeAsMap(services.serviceTrees).servicesAsList[EndPoint, Request[_], Result].map { t: IndentAnd[Tree] =>
+          <tr>
+            <td>
+              {NodeSeq.fromSeq((List.fill(t.indent * 4)(EntityRef("nbsp")) ::: wrapInOptionalLink(t.t)(t.t.asHtml).toList).flatten)}
+            </td>
+          </tr>
         }}
-        </ul>
+        </table>
       </body>
     </html>).as("text/html")
+  }
 
+  val allCaches = services.serviceTrees.servicesWith[Cache[Any,Any], Any, Any]
+
+  def caches = Action { implicit request =>
+    Ok(<html>
+      <body>
+        <ul>
+          {allCaches.map { c => s"size ${c.size}" }}
+        </ul>
+      </body>
+    </html>
+    ).as("text/html")
   }
 
   val debugEndPoints = services.serviceTrees.toMap[DebugEndPoint, String, String](_.name)

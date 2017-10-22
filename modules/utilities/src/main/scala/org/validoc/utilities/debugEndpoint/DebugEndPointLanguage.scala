@@ -6,7 +6,7 @@ import utilities.kleisli.Kleisli
 
 import scala.concurrent.ExecutionContext
 
-case class DebugEndPoint(name: String) extends ServiceType
+case class DebugEndPoint(name: String, actualEndPoint: Kleisli[_, _]) extends ServiceType
 
 trait MakeDebugQuery[Req] extends (String => Req)
 
@@ -27,7 +27,7 @@ trait DebugEndPointLanguage {
   def debug[Req, Res](name: String)(implicit makeQuery: MakeDebugQuery[Req], debugToString: DebugToString[Res], ex: ExecutionContext, serviceTrees: ServiceTrees): KleisliDelegate[Req, Res] =
     new KleisliDelegate[Req, Res] {
       override def apply(kleisli: Kleisli[Req, Res]): Kleisli[Req, Res] = {
-        serviceTrees.add(DebugEndPoint(name)).addOneChild[String, String](makeQuery ~> kleisli ~> debugToString, kleisli)
+        serviceTrees.add(DebugEndPoint(name, kleisli)).addOneChild[String, String](makeQuery ~> kleisli ~> debugToString, kleisli)
         kleisli
       }
     }
