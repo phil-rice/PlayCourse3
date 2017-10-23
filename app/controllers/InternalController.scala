@@ -2,15 +2,16 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import org.validoc.utilities._
 import org.validoc.utilities.cache.Cache
 import org.validoc.utilities.debugEndpoint.DebugEndPoint
 import org.validoc.utilities.endpoint.EndPoint
-import org.validoc.utilities.{AsHtml, IndentAnd, ServiceTreeAsMap, Tree}
 import play.api.mvc.{AbstractController, ControllerComponents, Request, Result}
 import services.Services
 import utilities.kleisli.Kleisli
 
 import scala.concurrent.ExecutionContext
+import scala.reflect.ClassTag
 import scala.xml.{EntityRef, NodeSeq}
 
 
@@ -20,14 +21,20 @@ class InternalController @Inject()(cc: ControllerComponents, services: Services)
 
   import AsHtml.AsHtmlPimper
 
+  def addToMap[ST <: ServiceType : ClassTag, Req: ClassTag, Res: ClassTag](map: Map[Kleisli[_, _], String], getService: (Kleisli[_, _], ST) => Kleisli[_, _], getName: ST => String) =
+    services.serviceTrees.servicesWithSome[ST, Req, Res].foldLeft(map) { case (acc, (st, service)) =>
+      acc + (getService(service, st) -> getName(st))
+    }
 
-  val mapServiceToDebugEndPoint = services.serviceTrees.servicesWithSome[DebugEndPoint, String, String].foldLeft(Map[Kleisli[_, _], String]()) { case (acc, (st, service)) =>
-    acc + (st.actualEndPoint -> st.name)
-  }
+  val mapServiceToEndPoint = addToMap[EndPoint, Request[_], Result](addToMap[DebugEndPoint, String, String](Map(), (s, st) => st.actualEndPoint, "/internal/" + _.name), (s, st) => s, _.name);
+
+  //  services.serviceTrees.servicesWithSome[DebugEndPoint, String, String].foldLeft(Map[Kleisli[_, _], String]()) { case (acc, (st, service)) =>
+  //    acc + (st.actualEndPoint -> st.name)
+  //  }
 
   def wrapInOptionalLink(tree: Tree)(nodeSeq: NodeSeq) =
-    mapServiceToDebugEndPoint.get(tree.service) match {
-      case Some(name) => <a href={"/internal/" + name}>
+    mapServiceToEndPoint.get(tree.service) match {
+      case Some(name) => <a href={name}>
         {nodeSeq}
       </a>
       case None => nodeSeq
@@ -49,7 +56,7 @@ class InternalController @Inject()(cc: ControllerComponents, services: Services)
     </html>).as("text/html")
   }
 
-  val allCaches = services.serviceTrees.servicesWith[Cache[Any,Any], Any, Any]
+  val allCaches = services.serviceTrees.servicesWith[Cache[Any, Any], Any, Any]
 
   def caches = Action { implicit request =>
     Ok(<html>
