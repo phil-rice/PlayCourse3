@@ -1,6 +1,6 @@
 package domain
 
-import org.validoc.utilities.UnitSpec
+import org.validoc.utilities.{TraceId, UnitSpec}
 
 class EnrichMostPopularSpec extends UnitSpec with EnricherFixture[MostPopularQuery, MostPopular, Programme, EnrichedMostPopular] {
 
@@ -16,7 +16,7 @@ class EnrichMostPopularSpec extends UnitSpec with EnricherFixture[MostPopularQue
 
   it should " have an enricher " in {
     setupEnricher { enricher =>
-      enricher.apply(MostPopularQuery,mostPopular, programmes) shouldBe EnrichedMostPopular(programmes)
+      enricher.apply(MostPopularQuery(TraceId("someTraceId")), mostPopular, programmes) shouldBe EnrichedMostPopular(programmes)
     }
   }
 }

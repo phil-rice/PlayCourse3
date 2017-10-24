@@ -8,6 +8,7 @@ object Arrows {
   implicit class FunctionPimper[Req, Res](fn: Req => Res){
     def ~>[Res2](fn2: Res => Res2) = fn andThen fn2
   }
+
   implicit class FnMakesSeqPimper[Req, Res](fn: Req => Seq[Res]) {
     def |+|[T](mapfn: Res => T) = { r: Req => fn(r).map(mapfn) }
   }

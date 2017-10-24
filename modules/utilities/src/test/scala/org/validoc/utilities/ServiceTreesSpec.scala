@@ -18,7 +18,7 @@ class ServiceTreesSpec extends UnitSpec {
     tree1.service shouldBe service1
     tree2.service shouldBe service2
 
-    serviceTrees.servicesWith[RootServiceType, String, Int] shouldBe List((None, service1), (None, service2))
+    serviceTrees.servicesWith[RootServiceType, String, Int] shouldBe List(ServiceTree[RootServiceType, String, Int](None, service1, Seq()), ServiceTree[RootServiceType, String, Int](None, service2, Seq()))
   }
 
 }

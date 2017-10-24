@@ -1,33 +1,35 @@
 package domain
 
 import domain.HomePage.HomePageToResponse.Ok
+import org.validoc.utilities.{HasTraceId, TraceId, TraceIdGenerator}
 import play.api.libs.ws.{WSClient, WSResponse}
 import services.HostAndPorts
 import org.validoc.utilities.debugEndpoint.MakeDebugQuery
 import org.validoc.utilities.endpoint.{EndPointToRes, MakeReqFromHttpReq}
 import org.validoc.utilities.kleisli.{ChildReqFinder, Enricher}
-import play.api.mvc.{Request, Result, Results}
+import play.api.mvc.{AnyContent, Request, Result, Results}
 import services.objectify.{BuildFromResponse, BuildRequestFrom}
 
-trait MostPopularQuery
+case class MostPopularQuery(traceId: TraceId)
 
 case class MostPopular(programmeIds: Seq[ProgrammeId])
 
 case class EnrichedMostPopular(programmes: Seq[Programme])
 
-object MostPopularQuery extends MostPopularQuery {
-
-  implicit object MakeDebugQueryForMostPopularQuery extends MakeDebugQuery[MostPopularQuery] {
-    override def apply(v1: String) = MostPopularQuery
+object MostPopularQuery {
+  implicit def MakeDebugQueryForMostPopularQuery(implicit traceIdGenerator: TraceIdGenerator) = new MakeDebugQuery[MostPopularQuery] {
+    override def apply(v1: String) = MostPopularQuery(traceIdGenerator())
   }
-  implicit object MakeEndPointQueryForMostPopularQuery extends MakeReqFromHttpReq [Request[_] , MostPopularQuery] {
-    override def apply(v1: Request[_]) = MostPopularQuery
+
+  implicit def MakeEndPointQueryForMostPopularQuery[Content](implicit traceIdGenerator: TraceIdGenerator, hasTraceId: HasTraceId[Request[Content]]) = new MakeReqFromHttpReq[Request[Content], MostPopularQuery] {
+    override def apply(v1: Request[Content]) = MostPopularQuery(traceIdGenerator.getOrCreate(v1))
   }
 
   implicit object BuilderForVogueRequest extends BuildRequestFrom[MostPopularQuery] {
     override def apply(ws: WSClient)(t: MostPopularQuery)(implicit hostAndPorts: HostAndPorts) =
-      ws.url(hostAndPorts.vogueHostAndPort + "/mostpopular")
+      ws.url(hostAndPorts.vogueHostAndPort + "/mostpopular")//.withHttpHeaders(("x-trace-id", t.traceId.id))
   }
+
 }
 
 object MostPopular {
@@ -47,10 +49,13 @@ object MostPopular {
 
 object EnrichedMostPopular {
 
+  //  ((ParentReq, ParentRes =>Seq[ChildRes] => EnrichedParent)
+
   implicit object EnricherForMostPopular extends Enricher[MostPopularQuery, MostPopular, Programme, EnrichedMostPopular] {
     override def apply(v1: MostPopularQuery, v2: MostPopular, v3: Seq[Programme]) = EnrichedMostPopular(v3)
   }
-  implicit  object EnrichedMostPopularToResponse extends Results with  EndPointToRes[Result, EnrichedMostPopular] {
+
+  implicit object EnrichedMostPopularToResponse extends Results with EndPointToRes[Result, EnrichedMostPopular] {
     override def apply(v1: EnrichedMostPopular) = Ok(v1.toString).as("text/html")
   }
 

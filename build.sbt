@@ -19,7 +19,8 @@ val basicSettings = Seq(
   libraryDependencies += "org.scalamock" %% "scalamock-scalatest-support" % versions.scalamock % Test)
 
 val utilitiesSettings = basicSettings ++ Seq(
-  libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+  libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
+  libraryDependencies += "com.github.blemale" %% "scaffeine" % "2.1.0" % "compile" // https://github.com/blemale/scaffeine
   //  libraryDependencies += "org.typelevel" %% "macro-compat" % "1.1.1",
   //  libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
   //  libraryDependencies += "org.scala-lang" % "scala-reflect" % "2.11.7",

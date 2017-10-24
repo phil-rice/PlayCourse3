@@ -24,6 +24,7 @@ trait MergeServiceType extends ServiceType
 trait EnrichServiceType extends ServiceType
 
 class Combine[Req1, Res1, Req2, Res2](one: Kleisli[Req1, Res1], two: Kleisli[Req2, Res2]) {
+
   def merge[MainReq: ClassTag, MainRes: ClassTag](implicit findId1: FindChildId[MainReq, Req1], findId2: FindChildId[MainReq, Req2], merge: Merge[Res1, Res2, MainRes], serviceTrees: ServiceTrees, ex: ExecutionContext): Kleisli[MainReq, MainRes] =
     serviceTrees.add[MergeServiceType].addServices({ main =>
       val f1: Future[Res1] = one(findId1(main))

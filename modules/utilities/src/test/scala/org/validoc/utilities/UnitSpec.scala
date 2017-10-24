@@ -25,6 +25,8 @@ case class TestReq1(s: String)
 
 case class TestReq2(s: String)
 
+case class TestRes(s: String)
+
 case class TestParentRes(s: List[TestReq1])
 
 case class TestEnrichedRes(s: List[TestReq1])
